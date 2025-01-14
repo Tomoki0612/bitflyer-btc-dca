@@ -16,12 +16,14 @@ logging.info("プログラムが開始されました")
 # 環境変数から認証情報を取得
 API_KEY = os.environ.get('API_KEY')
 API_SECRET = os.environ.get('API_SECRET')
+TRADE_AMOUNT = os.environ.get('TRADE_AMOUNT')
 
-if not API_KEY or API_SECRET:
-    logging.error("API_KEY or API_SECRET is not set in the environment variables.")
+if not API_KEY or not API_SECRET or not TRADE_AMOUNT:
+    logging.error("API_KEY, API_SECRET, or TRADE_AMOUNT is not set in the environment variables.")
     sys.exit(1)
 
 logging.info(f"API_KEY: {API_KEY[:5]}...")  # セキュリティのため、最初の5文字のみ表示
+logging.info(f"取引金額: {TRADE_AMOUNT} 円")
 
 # 設定
 TEST_MODE = False  # 実際の取引を行うためFalseに設定
@@ -69,9 +71,9 @@ def get_btc_price():
 def main():
     logging.info("main関数が開始されました")
     try:
-        # ユーザーから金額を入力
-        trade_amount = float(input("取引金額を入力してください（円）: "))
-        logging.info(f"入力された取引金額: {trade_amount} 円")
+        # 環境変数から取引金額を取得
+        trade_amount = float(TRADE_AMOUNT)
+        logging.info(f"取引金額: {trade_amount} 円")
 
         btc_price = get_btc_price()
         amount = trade_amount / btc_price
