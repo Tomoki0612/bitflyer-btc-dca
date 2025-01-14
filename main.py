@@ -17,7 +17,7 @@ logging.info("プログラムが開始されました")
 API_KEY = os.environ.get('API_KEY')
 API_SECRET = os.environ.get('API_SECRET')
 
-if not API_KEY or not API_SECRET:
+if not API_KEY or API_SECRET:
     logging.error("API_KEY or API_SECRET is not set in the environment variables.")
     sys.exit(1)
 
@@ -25,7 +25,6 @@ logging.info(f"API_KEY: {API_KEY[:5]}...")  # セキュリティのため、最�
 
 # 設定
 TEST_MODE = False  # 実際の取引を行うためFalseに設定
-TRADE_AMOUNT = 60000  # 60,000円の取引に設定
 API_ENDPOINT = 'https://api.bitflyer.com'
 
 def get_signature(method, endpoint, body):
@@ -70,8 +69,12 @@ def get_btc_price():
 def main():
     logging.info("main関数が開始されました")
     try:
+        # ユーザーから金額を入力
+        trade_amount = float(input("取引金額を入力してください（円）: "))
+        logging.info(f"入力された取引金額: {trade_amount} 円")
+
         btc_price = get_btc_price()
-        amount = TRADE_AMOUNT / btc_price
+        amount = trade_amount / btc_price
         # 0.00000001 BTC単位に丸める
         amount = math.floor(amount * 100000000) / 100000000
         logging.info(f"購入予定量: {amount} BTC")
