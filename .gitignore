@@ -1,3 +1,6 @@
 venv/
 .env
 output.log
+
+# Ignore instance folder
+instance/
