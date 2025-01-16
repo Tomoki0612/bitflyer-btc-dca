@@ -2,7 +2,7 @@ name: Bitcoin DCA
 
 on:
   schedule:
-    - cron: '0 0 28 * *'  # 毎月28日の0:00 UTC (日本時間9:00)に実行
+    - cron: '0 0 29 * *'  # デフォルトは毎月29日の0:00 UTC (日本時間9:00)に実行
   workflow_dispatch:  # 手動実行用
 
 jobs:
@@ -10,16 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.9'
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+
+    - name: Get trade config from database
+      id: get-config
+      run: python get_trade_config.py
+
     - name: Run script
       env:
         API_KEY: ${{ secrets.API_KEY }}
         API_SECRET: ${{ secrets.API_SECRET }}
+        TRADE_AMOUNT: ${{ steps.get-config.outputs.TRADE_AMOUNT }}
+        TRADE_DAY: ${{ steps.get-config.outputs.TRADE_DAY }}
       run: python main.py
