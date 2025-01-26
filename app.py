@@ -1,9 +1,11 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from forms import LoginForm
 import os
 
 # Flaskアプリケーションのインスタンスを作成
 app = Flask(__name__, instance_relative_config=True)
+app.config['SECRET_KEY'] = 'your_secret_key'  # セッション用の秘密鍵を設定
 
 # データベースの設定
 # インスタンスフォルダ内にデータベースファイルを作成するパスを指定
@@ -55,6 +57,18 @@ def set_trade_config():
     print(f"Saved config: trade_amount={trade_amount}, trade_day={trade_day}")
 
     return jsonify({'message': '設定が保存されました'})
+
+# ログインページのエンドポイント
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        if form.username.data == 'admin' and form.password.data == 'password':
+            flash('ログインに成功しました', 'success')
+            return redirect(url_for('serve_index'))
+        else:
+            flash('ユーザー名またはパスワードが間違っています', 'danger')
+    return render_template('login.html', form=form)
 
 # アプリケーションをデバッグモードで実行
 if __name__ == '__main__':
